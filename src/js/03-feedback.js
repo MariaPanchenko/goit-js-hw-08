@@ -1,10 +1,11 @@
 let formData = {};
 const form = document.querySelector('form');
-const inputValue = localStorage;
+const inputEl = document.querySelector('form input');
+const textareaEl = document.querySelector('form textarea');
 import throttle from 'lodash.throttle';
 
 const deboucedLocalStorageValueSetter = throttle(data => {
-  inputValue.setItem('formData', JSON.stringify(data));
+  localStorage.setItem('formData', JSON.stringify(data));
 }, 500);
 
 form.addEventListener('input', function (event) {
@@ -12,8 +13,8 @@ form.addEventListener('input', function (event) {
   deboucedLocalStorageValueSetter(formData);
 });
 
-if (inputValue.getItem('formData')) {
-  formData = JSON.parse(inputValue.getItem('formData'));
+if (localStorage.getItem('formData')) {
+  formData = JSON.parse(localStorage.getItem('formData')) || {};
 
   for (let key in formData) {
     form.elements[key].value = formData[key];
@@ -21,10 +22,17 @@ if (inputValue.getItem('formData')) {
   // console.log(formData);
 }
 
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  form.reset();
-  localStorage.setItem('formData', null);
-  // localStorage.clear();
-  formData = {};
-});
+function onFormSubmit(event) {
+  event.preventDefault();
+  if (textareaEl.value === '' || inputEl.value === '') {
+    alert('Заповніть всі поля');
+  } else {
+    console.log(formData);
+    form.reset();
+    localStorage.setItem('formData', null);
+    // localStorage.clear();
+    formData = {};
+  }
+}
+
+form.addEventListener('submit', onFormSubmit);
